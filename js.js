@@ -42,6 +42,8 @@ const cities = [
 
 let correctCity;
 let remainingCities = [...cities];
+let mistakes = 0; // Лічильник помилок
+const maxMistakes = 3; // Максимальна кількість помилок
 
 function getRandomCity() {
   const randomIndex = Math.floor(Math.random() * remainingCities.length);
@@ -49,6 +51,13 @@ function getRandomCity() {
 }
 
 function updateUI() {
+  if (mistakes >= maxMistakes) {
+    document.getElementById("result").textContent =
+      "Гра завершена. Ви допустили 3 помилки!";
+    document.getElementById("next").style.display = "none";
+    return;
+  }
+
   const optionsContainer = document.getElementById("options");
   optionsContainer.innerHTML = "";
   const randomCity = getRandomCity();
@@ -71,19 +80,26 @@ function updateUI() {
 function checkAnswer(selectedCity) {
   if (selectedCity === correctCity) {
     document.getElementById("result").textContent = "Правильно!";
-    remainingCities = remainingCities.filter(
-      (city) => city.name !== correctCity
-    );
+    remainingCities = remainingCities.filter(function (city) {
+      return city.name !== correctCity;
+    });
     if (remainingCities.length === 0) {
       document.getElementById("result").textContent =
         "Вітаємо! Ви вгадали всі міста!";
       document.getElementById("next").style.display = "none";
     } else {
-      setTimeout(updateUI, 1000);
+      updateUI;
     }
   } else {
-    document.getElementById("result").textContent =
-      "Неправильно, спробуйте ще раз!";
+    mistakes++; // Додаємо помилку
+    document.getElementById(
+      "result"
+    ).textContent = `Неправильно, спробуйте ще раз! Помилок: ${mistakes}/${maxMistakes}`;
+    if (mistakes >= maxMistakes) {
+      document.getElementById("result").textContent =
+        "Гра завершена. Ви допустили 3 помилки!";
+      document.getElementById("next").style.display = "none";
+    }
   }
 }
 
@@ -104,3 +120,4 @@ function shuffle(array) {
 document.getElementById("next").onclick = updateUI;
 
 updateUI();
+
